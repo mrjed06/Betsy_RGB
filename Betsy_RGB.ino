@@ -1,10 +1,9 @@
 #include <RGB_LED.h> //library to control individual RGB LEDs (common Cathode)
 
 /*NOTES ON PIN ASSIGNMENT:
-12 of the arduino Mega PWM outputs are used to create 4 independent LED Color Signals (3 pins -R, G, and B-  for each LED signal).
-In physical terms, 4 different colors can be shown at once across the total number of LEDs. For example, 4 LEDs can show
-4 different colors at a given time (one for each LED Color Signal) and 8 LEDs also can also only show 4 different 
-colors at a given time (two for each LED Color Signal). 
+12 of the arduino Mega PWM outputs are used to create 4 independent LED Color Signals. Why 12? Because each of
+the four LED Color Signals consists of 3 sub-signals (4 * 3 = 12) -- one for the R value, one for the G value,
+and one for the B value. 
 */
 #define Pin_r1 2 //Color Signal 1 (RED) output pin
 #define Pin_g1 3 //Color Signal 1 (GREEN) output pin
@@ -23,7 +22,7 @@ byte all_gPins[] = {3,6,9,12}; //group all GREEN pins into one array
 byte all_bPins[] = {4,7,10,13}; //group all BLUE pins into one array
 byte all_colorPins[] = {2,3,4,5,6,7,8,9,10,11,12,13}; //group all LED RGB pins into one array (useful for turning all LEDs "off")
 
-#define Pin_button 1 // light show "Mode"Button input pin
+#define Pin_button 25 // light show "Mode"Button input pin
 
 // -------- Pin Output Variables -----------
 uint8_t maxBrightness; //value 0-255
@@ -39,20 +38,20 @@ uint8_t numberOfStates; //constant that equals the number of light shows program
 //RGB_LED LED1(Pin_r1, Pin_g1, Pin_b1);
 
 void setup() {
-  pinMode(Pin_button, INPUT_PULLUP); //INPUT_PULLUP connects the pin to 5V with the arduino's built in 20K resistor in between
-  
+  pinMode(Pin_button, INPUT_PULLUP); //INPUT_PULLUP connects the pin to 5V with the arduino's built in 20K resistor in-between.
+                                     //The circuit is wired so when the switch is open, Pin_button is HIGH. When closed, Pin_button is LOW.
   maxBrightness = 255; //255 is max for common cathode RGB (0 for common anode RGB)
-  lightShow_State = 0; //initialize to 0, which is the "All LEDs OFF" state
+  lightShow_State = 0; //initialize to 0, which triggers "All LEDs OFF" state
   numberOfStates = 2; //constant that equals the number of light shows programmed (including the "ALL LEDs OFF" show)
   
   Serial.begin(9600); //for debugging
 }
 
 void loop() {
-  LightShow_0();
+  /*LightShow_0();
   delay(1000);
-  LightShow_1();
-  /*if (lightShow_State == 0){
+  LightShow_1();*/
+  if (lightShow_State == 0){
     LightShow_0();
   }
   
@@ -66,10 +65,14 @@ void loop() {
   //LED1.setFunction(Step2);
   //LED1.run();
         
-  if (pinButtonValue == LOW){
+  if (pinButtonValue == LOW){ //when the push button is pressed, 
     lightShow_State = 1;   
-   
-  }*/
+  }
+
+  else if (pinButtonValue == HIGH){
+    lightShow_State = 0;
+  }
+  
 }
 
 // ------------- Light Shows (States) ----------------
